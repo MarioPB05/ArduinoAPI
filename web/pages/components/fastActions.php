@@ -17,13 +17,13 @@
             <?php 
                 if($_SERVER['REQUEST_URI'] == '/ArduinoAPI/web/pages/control-panel'){
                     echo '
-                    <a href="#" class="nav-link active py-3 border-bottom" aria-current="page" title="Inicio" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <a href="control-panel" class="nav-link active py-3 border-bottom" aria-current="page" title="Inicio" data-bs-toggle="tooltip" data-bs-placement="right">
                         <img src="../assets/icons/homeIcon.png" alt="Incio" class="bi" role="img" aria-label="Incio" width="24">
                     </a>
                     ';
                 }else{
                     echo '
-                    <a href="#" class="nav-link py-3 border-bottom" aria-current="page" title="Inicio" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <a href="control-panel" class="nav-link py-3 border-bottom" aria-current="page" title="Inicio" data-bs-toggle="tooltip" data-bs-placement="right">
                         <img src="../assets/icons/homeIcon.png" alt="Incio" class="bi" role="img" aria-label="Incio" width="24">
                     </a>
                     ';
@@ -35,13 +35,13 @@
             <?php 
                 if($_SERVER['REQUEST_URI'] == '/ArduinoAPI/web/pages/docs'){
                     echo '
-                    <a href="#" class="nav-link active py-3 border-bottom" title="Documentación" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <a href="docs" class="nav-link active py-3 border-bottom" title="Documentación" data-bs-toggle="tooltip" data-bs-placement="right">
                         <img src="../assets/icons/bookIcon.png" alt="Incio" class="bi" role="img" aria-label="Documentación" width="24">
                     </a>
                     ';
                 }else{
                     echo '
-                    <a href="#" class="nav-link py-3 border-bottom" title="Documentación" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <a href="docs" class="nav-link py-3 border-bottom" title="Documentación" data-bs-toggle="tooltip" data-bs-placement="right">
                         <img src="../assets/icons/bookIcon.png" alt="Incio" class="bi" role="img" aria-label="Documentación" width="24">
                     </a>
                     ';

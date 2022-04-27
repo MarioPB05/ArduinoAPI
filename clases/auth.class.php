@@ -5,14 +5,20 @@ require_once 'errores.class.php';
 
 class Auth extends config{
 
-    private $clientId = "";
-    private $clientSecret = "";
-    private $token = "";
-    private $listScopes = "";
-    private $csrf = "421aa90e079fa326b6494f812ad13e79";
+    public $clientId = "";
+    public $clientSecret = "";
+    public $token = "";
+    public $csrf = "421aa90e079fa326b6494f812ad13e79";
+
+    // Token Data
+    public $login = "";
+    public $scopes = array();
+    public $user_id = "";
+    public $expires_in = "";
 
     function __construct(){
         $this->loadConfiguration();
+        $this->loadTokenDataConfig();
     }
 
     private function loadConfiguration(){
@@ -46,15 +52,6 @@ class Auth extends config{
         file_put_contents(parent::getUrlConfig(),$json_Config);
     }
 
-    public function loadScopes(){
-        $configData = file_get_contents("clases/config/scopes.json");
-        $jsonScopes = json_decode($configData);
-
-        foreach ($jsonScopes as $scope) {
-            $this->listScopes .= $scope;
-        }
-    }
-
     public function setToken($newToken){
         $this->token = $newToken;
         $this->saveConfiguration();
@@ -67,6 +64,58 @@ class Auth extends config{
     public function signOut(){
         $this->token = "";
         $this->saveConfiguration();
+    }
+
+    // Token Data Functions
+
+    public function validateToken(){
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://id.twitch.tv/oauth2/validate',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: OAuth '.$this->token
+        ),
+        ));
+
+        $response = json_decode(curl_exec($curl));
+
+        // Guardamos los datos que nos devuelve acerca del token
+        $this->saveTokenDataConfig($response);
+
+        curl_close($curl);
+        return $response;
+    }
+
+    private function saveTokenDataConfig($tempConfig){
+        //$tempConfig = array("clientId"=> $this->clientId,"clientSecret"=> $this->clientSecret,"token"=> $this->token);
+        $json_Config = json_encode($tempConfig);
+        file_put_contents(parent::getUrlTokenDataConfig(),$json_Config);
+    }
+
+    private function loadTokenDataConfig(){
+        $configData = file_get_contents(parent::getUrlTokenDataConfig());
+        $jsonConfig = json_decode($configData);
+        $_error = new Errores;
+
+        if(isset($jsonConfig->client_id)){
+            $this->clientId = $jsonConfig->client_id;
+            $this->login = $jsonConfig->login;
+            $this->scopes = $jsonConfig->scopes;
+            $this->user_id = $jsonConfig->user_id;
+            $this->expires_in = $jsonConfig->expires_in;
+        }else {
+            // Como no entra en el IF tampoco va encontrar los demás valores
+            return $_error->error_406("No se encontró el clientId en la configuración (Formato de los datos del token incorrecto)");
+        }
     }
 
     // Codigo remplazado
@@ -102,56 +151,56 @@ class Auth extends config{
         curl_close($ch);
     } */
 
-    // public function verifyToken(){
-    //     // abrimos la sesión cURL
-    //     $ch = curl_init();
-    //     // definimos la URL a la que hacemos la petición
-    //     curl_setopt($ch, CURLOPT_URL,"https://id.twitch.tv/oauth2/validate");
-    //     // definimos cada uno de los parámetros
-    //     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    //         'Authorization: OAuth '.$this->token
-    //     ));
+    /* public function verifyToken(){
+        // abrimos la sesión cURL
+        $ch = curl_init();
+        // definimos la URL a la que hacemos la petición
+        curl_setopt($ch, CURLOPT_URL,"https://id.twitch.tv/oauth2/validate");
+        // definimos cada uno de los parámetros
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: OAuth '.$this->token
+        ));
     
-    //     // recibimos la respuesta y la guardamos en una variable
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //     curl_setopt($ch, CURLOPT_HEADER, true);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // recibimos la respuesta y la guardamos en una variable
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-    //     $response = json_decode(curl_exec($ch),true);
-    //     $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    //     $header = substr($response, 0, $header_size);
-    //     $body = substr($response, $header_size);
+        $response = json_decode(curl_exec($ch),true);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
         
-    //     print_r($header);
-    //     print_r($body);
+        print_r($header);
+        print_r($body);
 
-    //     // Vemos si tenemos errores
-    //     $error = json_decode(curl_error($ch));
-    //     print_r($error);
+        // Vemos si tenemos errores
+        $error = json_decode(curl_error($ch));
+        print_r($error);
 
-    //     // cerramos la sesión cURL
-    //     curl_close ($ch);
+        // cerramos la sesión cURL
+        curl_close ($ch);
         
-    //     if(isset($error)){
-    //         if(isset($error->status)){
-    //             if($error->status == 401){
-    //                 return $error->message;
-    //             }
-    //         }
-    //     }else{
-    //         return $response;
-    //     }
-    // }
+        if(isset($error)){
+            if(isset($error->status)){
+                if($error->status == 401){
+                    return $error->message;
+                }
+            }
+        }else{
+            return $response;
+        }
+    }
 
-    // public function isSignIn(){
-    //     //$result = $this->verifyToken();
-    //     if(isset($result->login)){
-    //         return "True";
-    //     }else{
-    //         print_r( $this->verifyToken());
-    //         //return "False";
-    //     }
-    // }
+    public function isSignIn(){
+        //$result = $this->verifyToken();
+        if(isset($result->login)){
+            return "True";
+        }else{
+            print_r( $this->verifyToken());
+            //return "False";
+        }
+    } */
 }
 
 ?>

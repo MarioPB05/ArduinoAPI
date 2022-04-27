@@ -61,6 +61,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Apartado sobre el Stream -->
+            <div class="accordion mt-4">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                            <img class="me-3" src="../assets/icons/streamIcon.png" width="24" alt="icon">
+                            Estado del Stream
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                      <div id="stream-desc" class="accordion-body">
+                        No se ha iniciado stream, prueba a iniciar una retransmisión
+                      </div>
+                    </div>
+                </div>
+            </div>
             
             <div id="toastContainer" class="toast-container position-absolute bottom-0 end-0 m-2">
             

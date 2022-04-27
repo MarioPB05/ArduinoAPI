@@ -13,7 +13,15 @@ if($_SERVER['REQUEST_METHOD'] == "GET"){
 
     if(isset($_GET["signOut"])) {
         $_auth->signOut();
+    }else if(isset($_GET["validate"])) {
+        $response = $_auth->validateToken();
+
+        if(isset($response)){
+            header('Content-Type: application/json');
+            echo json_encode($response);  
+        }
     }
+
 }else if($_SERVER['REQUEST_METHOD'] == "POST") {
     if(isset($_GET["function"])) {
         $funcion = $_GET["function"];

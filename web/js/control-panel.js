@@ -58,74 +58,24 @@ function signOut() {
     location.reload();
 }
 
-function getToken() {
-
-    // Funcion que consume nuestra API, que le devolvera el token que debe utilizar
-
-    return fetch("../../clases/config/config.json")
-    .then(response => {
+function getUserData(){
+    
+    return fetch("http://localhost/ArduinoAPI/user?getData").then((response) => {
         return response.json();
-    })
-    .then((jsondata) => {
-        return jsondata.token;
-    });
-}
-
-function getClientId() {
-
-    // Funcion que consume nuestra API, que le devolvera el clientId que debe utilizar
-
-    return fetch("../../clases/config/config.json")
-    .then(response => {
-        return response.json();
-    })
-    .then((jsondata) => {
-        return jsondata.clientId;
-    });
-}
-
-function getUserData(token) {
-
-    // Funcion que obtiene todos los datos del usuario a partir del token
-
-    // Establecemos el header de la peticion, que contendra el token (Ya que este es pedido por la documentacion de Twitch)
-    const myHeaders = new Headers({
-        'Authorization': 'Bearer '+token,
-        'Client-Id': 'ohfa4jx2elff8xkzjaphoxkw70nwds'
-    });
-
-    return fetch("https://api.twitch.tv/helix/users", {
-        headers: myHeaders
-    })
-    .then((response) => {
-        // Obtenemos los resultados y los codificamos en un json, para trabajar mejor
-
-        return response.json();    
     }).then((json) => {
         return json;
     }).catch(error => console.error(error));
+
 }
 
-function validateToken(token) {
+function validateToken(){
 
-    // Establecemos el header de la peticion, que contendra el token que verificaremos para saber
-    // si el usuario esta o no logueado con nuestra API
-    let data = {};
-    const myHeaders = new Headers({
-        'Authorization': 'OAuth '+token
-    });
-
-    fetch("https://id.twitch.tv/oauth2/validate", {
-        headers: myHeaders
-    })
-    .then((response) => {
-        // Obtenemos los resultados y los codificamos en un json, para trabajar mejor
-
-        return response.json();    
+    fetch("http://localhost/ArduinoAPI/auth?validate").then((response) => {
+        return response.json();
     }).then((json) => {
         // Una vez que ya estan disponible los datos los leemos, para verificar al usuario
 
-        data = json;
+        let data = json;
         
         if(data.status) {
             // Enviamos una notificacion al usuario, para que sepa que el token
@@ -152,57 +102,77 @@ function validateToken(token) {
             // Se ha verificado el token correctamente
             // Recuperamos los datos del usuario
 
-            Promise.resolve(getUserData(token)).then(userData => {
+            Promise.resolve(getUserData()).then(userData => {
 
-                // Indicamos al usuario, que todo ha ido como deberia
-                const notificacion = new Notify("info",userData.data[0].profile_image_url,"userImage","Tu perfil ha sido cargado correctamente!","","Se han recuperado tus datos satisfactoriamente!","info");
-                            
-                var not = document.getElementById("info");
-                var toast = new bootstrap.Toast(not);
+                if(window.location.pathname == "/ArduinoAPI/web/pages/control-panel"){
+                    // Indicamos al usuario, que todo ha ido como deberia
+                    const notificacion = new Notify("info",userData.profile_image_url,"userImage","Tu perfil ha sido cargado correctamente!","","Se han recuperado tus datos satisfactoriamente!","info");
+                                                
+                    var not = document.getElementById("info");
+                    var toast = new bootstrap.Toast(not);
 
-                toast.show();
-
+                    toast.show();
+                }
+                
                 // Con los datos del usuario, actualizamos algunos elementos de la web con su informacion
                 const userImage = document.getElementById("userImage");
                 const headerText = document.getElementById("headerText");
 
-                userImage.setAttribute("src",userData.data[0].profile_image_url);
+                userImage.setAttribute("src",userData.profile_image_url);
                 headerText.innerText = "Cerrar Sesión";
                 headerText.addEventListener("click", signOut, false);
 
-                // Ahora actualizamos la información del token (Es decir, el apartado Token)
-                const tokenDescription = document.getElementById("token-desc");
-                
-                tokenDescription.innerText = "";
-                
-                Object.keys(data).forEach(e => {
-                    tokenDescription.innerHTML += "<strong>"+e+"</strong>"+": "+data[e]+"<br>";
-                });
+                if(window.location.pathname == "/ArduinoAPI/web/pages/control-panel"){
+                    // Ahora actualizamos la información del token (Es decir, el apartado Token)
+                    const tokenDescription = document.getElementById("token-desc");
+                                    
+                    tokenDescription.innerText = "";
+
+                    Object.keys(data).forEach(e => {
+                        tokenDescription.innerHTML += "<strong>"+e+"</strong>"+": "+data[e]+"<br>";
+                    });
+                }
             })
         }
     }).catch(error => console.error(error));
+
 }
 
 function getStream(token) {
+    
+    fetch("http://localhost/ArduinoAPI/stream?getData").then((response) => {
+        return response.json();
+    }).then((streamData) => {
 
-    Promise.resolve(getClientId().then(clientId => {
-        const myHeaders = new Headers({
-            'Authorization': 'Bearer '+token,
-            'Client-Id': clientId
-        });
+        if(Object.keys(streamData["data"]).length > 0){
+            if(window.location.pathname == "/ArduinoAPI/web/pages/control-panel"){
+                // Ahora actualizamos la información del token (Es decir, el apartado Token)
+                const streamDescription = document.getElementById("stream-desc");
+                                
+                streamDescription.innerText = "";
+
+                Object.keys(streamData["data"][0]).forEach(e => {
+                    streamDescription.innerHTML += "<strong>"+e+"</strong>"+": "+streamData["data"][0][e]+"<br>";
+                });
+            }
+        }else{
+            if(window.location.pathname == "/ArduinoAPI/web/pages/control-panel"){
+                // Indicamos al usuario, que no tiene una retransmisión activa
+                const notificacion = new Notify("warning","../assets/icons/streamIcon.png","userImage","No estás en Directo","","No se ha iniciado stream, prueba a iniciar una retransmisión","warning");
+                                            
+                var not = document.getElementById("warning");
+                var toast = new bootstrap.Toast(not);
+
+                toast.show();
+            }
+        }
         
-        Promise.resolve(getUserData(token)).then(userData => {
-            return fetch("https://api.twitch.tv/helix/streams?user_id="+userData["data"][0].id, {
-                headers: myHeaders
-            }).then(response => {return response.json()}).then(stream => {
-                console.log(stream);
-            });
-        });
-    }));
+    }).catch(error => console.error(error));
+
 }
 
 const btn = document.getElementById("btn");
 btn.addEventListener("click", signOut, false);
 
-Promise.resolve(getToken()).then(token => validateToken(token));
-Promise.resolve(getToken()).then(token => getStream(token));
+Promise.resolve(validateToken());
+Promise.resolve(getStream());
