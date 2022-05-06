@@ -14,9 +14,19 @@ int maxTimeResponse = 60000;
 //Configuracion del programa
 bool start = false;
 
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 13, 5, 4, 3, 2);
+
+#define COLS 16 // Columnas del LCD
+#define ROWS 2 // Filas del LCD
+
 void setup() {
   Serial.begin(9600);
   wifiModule.begin(9600);
+  lcd.begin(COLS, ROWS);
+
+  // Presentacion del proyecto
+  presentacionInicial();
 
   if (checkStatus()) {
     //El modulo nos responde, por lo que seguimos con la config
@@ -44,8 +54,13 @@ void setup() {
       Serial.println("");
 
       delay(1000);
-      getUserName();
-      start = true;
+
+      if (validateUserSession()) {
+        pantallaBienvenida();
+        start = true;
+      } else {
+        pantallaError("001");
+      }
     }
   } else {
     //El modulo no responde, por lo que el programa no hara nada
@@ -63,6 +78,73 @@ void loop() {
   if (Serial.available()) {
     wifiModule.write(Serial.read());
   }
+}
+
+/**
+   Muestra una presentacion en la pantalla LCD
+*/
+void presentacionInicial() {
+  lcd.clear();
+  lcd.print("     XOR APP");
+  lcd.setCursor(0, 1);
+  delay(500);
+  lcd.print("       .");
+  delay(500);
+  lcd.setCursor(0, 1);
+  lcd.print("       ..");
+  delay(500);
+  lcd.setCursor(0, 1);
+  lcd.print("       ...");
+  delay(1000);
+
+  lcd.setCursor(0, 1);
+  lcd.print("          ");
+  delay(1000);
+
+  lcd.setCursor(0, 1);
+  delay(500);
+  lcd.print("       .");
+  delay(500);
+  lcd.setCursor(0, 1);
+  lcd.print("       ..");
+  delay(500);
+  lcd.setCursor(0, 1);
+  lcd.print("       ...");
+  delay(500);
+}
+
+/**
+  Pantalla de Bienvenida (Pantalla Numero 1)
+*/
+void pantallaBienvenida() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+
+  //Indicamos al usuario el proceso de obtencion de sus datos
+  //lcd.print("Cargando Usuario");
+  //lcd.setCursor(0,1);
+  //lcd.print("-> Trabajando...");
+
+  //Obtenemos el nombre del usuario
+  String name = getUserName();
+
+  //Lo mostramos por pantalla
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Bienvenido,");
+  lcd.setCursor(0, 1);
+  lcd.print(name);
+}
+
+/**
+  Pantalla de errores
+*/
+void pantallaError(String codeError) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Error " + codeError);
+  lcd.setCursor(0, 1);
+  lcd.print("/error-codes.php");
 }
 
 /**
@@ -88,7 +170,6 @@ bool checkStatus() {
    Configura el modulo para conectarlo a internet
 */
 bool configRed() {
-
   Serial.println("");
   Serial.println("---------------------------------");
   Serial.println("Configurando la red del modulo...");
@@ -138,13 +219,10 @@ bool configRed() {
   }
 }
 
-void getUserName() {
-
-  Serial.println("");
-  Serial.println("------------------------------------");
-  Serial.println("Recuperando el nombre del usuario...");
-  Serial.println("------------------------------------");
-
+/**
+   Funcion que crea y envia una peticion HTTP
+*/
+String createHTTPRequest(String ruta) {
   //Nos conectamos con el servidor
   wifiModule.println("AT+CIPSTART=\"TCP\",\"" + server + "\",80");
   //Serial.println("AT+CIPSTART=\"TCP\",\"" + server + "\",80");
@@ -152,7 +230,7 @@ void getUserName() {
     Serial.println("-(INFO)-> El modulo se ha conectado al servidor: " + server);
 
     //Creamos el encabezado de la peticion http
-    String peticionHTTP = "GET /ArduinoAPI/user.php?getName HTTP/1.1\r\n";
+    String peticionHTTP = "GET " + ruta + " HTTP/1.1\r\n";
     peticionHTTP = peticionHTTP + "Host: " + server + "\r\n\r\n";
 
 
@@ -229,20 +307,46 @@ void getUserName() {
         delay(1000);
 
         String resultado = cadena;
-        resultado.remove(0,resultado.indexOf("{")+1);
-        resultado.remove(resultado.indexOf("}"),resultado.length()-resultado.indexOf("}"));
+        resultado.remove(0, resultado.indexOf("{") + 1);
+        resultado.remove(resultado.indexOf("}"), resultado.length() - resultado.indexOf("}"));
 
-        Serial.println("RESULTADO DATOS: " + resultado);
-
-        //        Serial.println("");
-        //        Serial.println("----------------{INFO}----------------");
-        //        Serial.println("Respuesta de la peticion HTTP enviada:");
-        //        Serial.println(cadena);
-        //        Serial.println("Tiempo de respuesta: "+tiempo_inicio);
-        //        Serial.println("--------------------------------------");
+        //Devolvemos la respuesta de la peticion
+        return resultado;
       }
     }
   } else {
     Serial.println("-(ERROR)-> El modulo no se ha podido conectar al servidor");
+    pantallaError("002");
   }
+}
+
+/**
+   Funcion que retorna si hay un usuario logeado en la API
+*/
+bool validateUserSession() {
+  Serial.println("");
+  Serial.println("------------------------------------");
+  Serial.println("Verificando la sesion del usuario...");
+  Serial.println("------------------------------------");
+
+  String resultado = createHTTPRequest("/ArduinoAPI/auth.php?validateArduino");
+
+  //En funcion del valor que nos devuelva la API sabremos si hay un usuario logado en la API
+  if (resultado == "true") {
+    return true;
+  } else if (resultado == "false") {
+    return false;
+  }
+}
+
+/**
+   Funcion que retorna el nombre del usuario
+*/
+String getUserName() {
+  Serial.println("");
+  Serial.println("------------------------------------");
+  Serial.println("Recuperando el nombre del usuario...");
+  Serial.println("------------------------------------");
+
+  return createHTTPRequest("/ArduinoAPI/user.php?getName");
 }

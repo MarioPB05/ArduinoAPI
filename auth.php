@@ -16,9 +16,19 @@ if($_SERVER['REQUEST_METHOD'] == "GET"){
     }else if(isset($_GET["validate"])) {
         $response = $_auth->validateToken();
 
-        if(isset($response)){
+        if(isset($response->client_id)){
             header('Content-Type: application/json');
             echo json_encode($response);  
+        }
+    }else if(isset($_GET["validateArduino"])) {
+        $response = $_auth->validateToken();
+
+        if(isset($response->client_id)){
+            header('Content-Type: application/json');
+            echo json_encode("{true}");  
+        }else {
+            header('Content-Type: application/json');
+            echo json_encode("{false}"); 
         }
     }
 
