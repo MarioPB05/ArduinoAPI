@@ -51,6 +51,10 @@ class User extends config{
         return $response->data[0];
     }
 
+    public function getDisplayName() {
+        return $this->getUserData()->display_name;
+    }
+
     private function loadUserDataConfig(){
         $configData = file_get_contents(parent::getUrlUserDataConfig());
         $jsonConfig = json_decode($configData);
