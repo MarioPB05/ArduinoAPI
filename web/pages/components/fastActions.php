@@ -69,16 +69,16 @@
 
         <li>
             <?php 
-                if($_SERVER['REQUEST_URI'] == '/ArduinoAPI/web/pages/user'){
+                if($_SERVER['REQUEST_URI'] == '/ArduinoAPI/web/pages/help'){
                     echo '
-                    <a href="#" class="nav-link active py-3 border-bottom" title="Perfil" data-bs-toggle="tooltip" data-bs-placement="right">
-                        <img src="../assets/icons/userIcon.png" alt="Incio" class="bi" role="img" aria-label="Perfil" width="24">
+                    <a href="help" class="nav-link active py-3 border-bottom" title="Perfil" data-bs-toggle="tooltip" data-bs-placement="right">
+                        <img src="../assets/icons/helpIcon.png" alt="Incio" class="bi" role="img" aria-label="Perfil" width="24">
                     </a>
                     ';
                 }else{
                     echo '
-                    <a href="#" class="nav-link py-3 border-bottom" title="Perfil" data-bs-toggle="tooltip" data-bs-placement="right">
-                        <img src="../assets/icons/userIcon.png" alt="Incio" class="bi" role="img" aria-label="Perfil" width="24">
+                    <a href="help" class="nav-link py-3 border-bottom" title="Perfil" data-bs-toggle="tooltip" data-bs-placement="right">
+                        <img src="../assets/icons/helpIcon.png" alt="Incio" class="bi" role="img" aria-label="Perfil" width="24">
                     </a>
                     ';
                 }

@@ -25,6 +25,28 @@ void setup() {
   wifiModule.begin(9600);
   lcd.begin(COLS, ROWS);
 
+  boot();
+}
+
+void loop() {
+  if (start) {
+    // PROGRAMA EN FUNCIONAMIENTO
+  } else {
+    delay(10000);
+    boot();
+  }
+  if (wifiModule.available()) {
+    Serial.write(wifiModule.read());
+  }
+  if (Serial.available()) {
+    wifiModule.write(Serial.read());
+  }
+}
+
+/**
+  Rutina de inicio para cargar el proyecto
+*/
+void boot() {
   // Presentacion del proyecto
   presentacionInicial();
 
@@ -60,23 +82,13 @@ void setup() {
         start = true;
       } else {
         pantallaError("001");
+        start = false;
       }
     }
   } else {
     //El modulo no responde, por lo que el programa no hara nada
     start = false;
-  }
-}
-
-void loop() {
-  if (start) {
-    // PROGRAMA EN FUNCIONAMIENTO
-  }
-  if (wifiModule.available()) {
-    Serial.write(wifiModule.read());
-  }
-  if (Serial.available()) {
-    wifiModule.write(Serial.read());
+    pantallaError("003");
   }
 }
 
@@ -207,7 +219,7 @@ bool configRed() {
         // no nos afecta para trabajar, por lo que
         // retornamos verdadero porque la configuracion
         // de red sigue siendo válida
-        Serial.println("-(ERROR)-> No se ha podido deshabilitadar las multiconexiones");
+        Serial.println("-(WARNING)-> No se ha podido deshabilitadar las multiconexiones");
 
         return true;
       }

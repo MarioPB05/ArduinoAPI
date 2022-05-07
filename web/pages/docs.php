@@ -97,6 +97,5 @@
         </div>
     </div>
 
-    <script src="../js/control-panel.js" type="module"></script>
 </body>
 </html>
