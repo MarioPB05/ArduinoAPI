@@ -29,6 +29,27 @@ if($_SERVER['REQUEST_METHOD'] == "GET"){
             header('Content-Type: application/json');
             echo json_encode("{".$response."}");  
         }
+    }else if(isset($_GET["getFollowerCount"])) {
+        $response = $_user->getFollowerCount();
+
+        if(isset($response)){
+            header('Content-Type: application/json');
+            echo json_encode("{".$response."}");  
+        }
+    }else if(isset($_GET["getLastSubscriber"])) {
+        $response = $_user->getLastSubscriber();
+
+        if(isset($response)){
+            header('Content-Type: application/json');
+            echo json_encode("{".$response."}");  
+        }
+    }else if(isset($_GET["getSubscriberCount"])) {
+        $response = $_user->getSubscriberCount();
+
+        if(isset($response)){
+            header('Content-Type: application/json');
+            echo json_encode("{".$response."}");  
+        }
     }
 
 }

@@ -103,6 +103,38 @@
                                 </div>
                                 <p class="mb-1">Retorna el nombre del usuario logueado en la API</p>
                             </div>
+
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">?getLastFollower</h6>
+                                    <small class="text-muted">GET</small>
+                                </div>
+                                <p class="mb-1">Retorna el nombre del último seguidor del usuario logueado en la API</p>
+                            </div>
+
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">?getFollowerCount</h6>
+                                    <small class="text-muted">GET</small>
+                                </div>
+                                <p class="mb-1">Retorna la cantidad de seguidores del usuario logueado en la API</p>
+                            </div>
+
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">?getLastSubscriber</h6>
+                                    <small class="text-muted">GET</small>
+                                </div>
+                                <p class="mb-1">Retorna el nombre del último suscriptor del usuario logueado en la API</p>
+                            </div>
+
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">?getSubscriberCount</h6>
+                                    <small class="text-muted">GET</small>
+                                </div>
+                                <p class="mb-1">Retorna la cantidad de suscriptores del usuario logueado en la API</p>
+                            </div>
                         </div>
                     </div>
                     </div>
