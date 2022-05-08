@@ -21,8 +21,8 @@
             </div>
             <p class="lead mb-4">Esta API esta creada para utilizarse como pasarela entre la <a href="https://dev.twitch.tv/docs/api/" target="_blank">API de Twich</a>, y nuestra aplicación y arduino</p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="web/pages/control-panel.php" class="btn btn-primary btn-lg px-4 gap-3 text-decoration-none">Panel de Control</a>
-                <a href="web/pages/docs.php" class="btn btn-outline-secondary btn-lg px-4 text-decoration-none">Leer Documentación</a>
+                <a href="web/pages/control-panel" class="btn btn-primary btn-lg px-4 gap-3 text-decoration-none">Panel de Control</a>
+                <a href="web/pages/docs" class="btn btn-outline-secondary btn-lg px-4 text-decoration-none">Leer Documentación</a>
             </div>
         </div>
     </div> 

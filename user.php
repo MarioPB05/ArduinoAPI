@@ -22,6 +22,13 @@ if($_SERVER['REQUEST_METHOD'] == "GET"){
             header('Content-Type: application/json');
             echo json_encode("{".$response."}");  
         }
+    }else if(isset($_GET["getLastFollower"])) {
+        $response = $_user->getLastFollower();
+
+        if(isset($response)){
+            header('Content-Type: application/json');
+            echo json_encode("{".$response."}");  
+        }
     }
 
 }
