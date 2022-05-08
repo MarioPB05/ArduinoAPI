@@ -1,16 +1,3 @@
-<?php
-    switch ($_SERVER['REQUEST_URI']) {
-        case '/ArduinoAPI/web/pages/docs.php':
-            echo 'hola';
-            break;
-        
-        default:
-            # code...
-            break;
-    }
-    
-?>
-
 <div class="d-flex flex-column flex-shrink-0 bg-light" style="width: 4.5rem;">
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center mt-2">
         <li class="nav-item">
