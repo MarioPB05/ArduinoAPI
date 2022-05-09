@@ -31,7 +31,7 @@
                 <h1 class="h2">Panel de Control</h1>
 
                 <!-- Utilidades Rápidas -->
-                <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
@@ -40,7 +40,7 @@
                     <span data-feather="calendar"></span>
                     This week
                     </button>
-                </div>
+                </div> -->
 
                 
             </div>

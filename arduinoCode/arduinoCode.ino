@@ -9,10 +9,11 @@ String password = "pruebas909010";
 String server = "192.168.1.26";
 String project = "/ArduinoAPI";
 int maxChar = 2000;
-int maxTimeResponse = 60000;
+int maxTimeResponse = 100000;
 
 //Configuracion del programa
 bool start = false;
+int delayTime = 8000;
 
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 13, 5, 4, 3, 2);
@@ -31,8 +32,19 @@ void setup() {
 void loop() {
   if (start) {
     // PROGRAMA EN FUNCIONAMIENTO
+
+    pantallaBienvenida();
+    delay(delayTime);
+    pantallaLastFollower();
+    delay(delayTime);
+    pantallaFollowerCount();
+    delay(delayTime);
+    pantallaLastSubscriber();
+    delay(delayTime);
+    pantallaSubscriberCount();
+    delay(delayTime);
   } else {
-    delay(10000);
+    delay(delayTime);
     boot();
   }
   if (wifiModule.available()) {
@@ -78,7 +90,6 @@ void boot() {
       delay(1000);
 
       if (validateUserSession()) {
-        pantallaBienvenida();
         start = true;
       } else {
         pantallaError("001");
@@ -129,8 +140,6 @@ void presentacionInicial() {
   Pantalla de Bienvenida (Pantalla Numero 1)
 */
 void pantallaBienvenida() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
 
   //Indicamos al usuario el proceso de obtencion de sus datos
   //lcd.print("Cargando Usuario");
@@ -146,6 +155,74 @@ void pantallaBienvenida() {
   lcd.print("Bienvenido,");
   lcd.setCursor(0, 1);
   lcd.print(name);
+}
+
+/**
+   Pantalla Ultimo Seguidor
+*/
+void pantallaLastFollower() {
+
+  //Obtenemos el nombre del seguidor
+  String followerName = getLastFollower();
+
+  //Lo mostramos por pantalla
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Ult. Seguidor:");
+  lcd.setCursor(0, 1);
+  lcd.print(followerName);
+}
+
+/**
+   Pantalla que muestra la cantidad de Seguidores
+*/
+void pantallaFollowerCount() {
+
+  //Obtenemos la cantidad de seguidores del usuario
+  String count = getFollowerCount();
+
+  //Lo mostramos por pantalla
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Seguidores:");
+  lcd.setCursor(0, 1);
+  lcd.print(count);
+}
+
+/**
+   Pantalla Ultimo Suscriptor
+*/
+void pantallaLastSubscriber() {
+
+  //Obtenemos el nombre del seguidor
+  String subscriberName = getLastSubscriber();
+
+  //Lo mostramos por pantalla
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Ult. Sub:");
+  lcd.setCursor(0, 1);
+  if(subscriberName == "0") {
+    lcd.print(":(");
+  }else {
+    lcd.print(subscriberName);
+  }
+}
+
+/**
+   Pantalla que muestra la cantidad de Suscriptores
+*/
+void pantallaSubscriberCount() {
+
+  //Obtenemos la cantidad de seguidores del usuario
+  String count = getSubscriberCount();
+
+  //Lo mostramos por pantalla
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Suscriptores:");
+  lcd.setCursor(0, 1);
+  lcd.print(count);
 }
 
 /**
@@ -361,4 +438,52 @@ String getUserName() {
   Serial.println("------------------------------------");
 
   return createHTTPRequest("/ArduinoAPI/user.php?getName");
+}
+
+/**
+   Funcion que retorna el nombre del ultimo seguidor
+*/
+String getLastFollower() {
+  Serial.println("");
+  Serial.println("--------------------------------------------");
+  Serial.println("Recuperando el nombre del ultimo seguidor...");
+  Serial.println("--------------------------------------------");
+
+  return createHTTPRequest("/ArduinoAPI/user.php?getLastFollower");
+}
+
+/**
+   Funcion que retorna la cantidad total de seguidores
+*/
+String getFollowerCount() {
+  Serial.println("");
+  Serial.println("----------------------------------------");
+  Serial.println("Recuperando la cantidad de seguidores...");
+  Serial.println("----------------------------------------");
+
+  return createHTTPRequest("/ArduinoAPI/user.php?getFollowerCount");
+}
+
+/**
+   Funcion que retorna el ultimo suscriptor
+*/
+String getLastSubscriber() {
+  Serial.println("");
+  Serial.println("----------------------------------------------");
+  Serial.println("Recuperando el nombre del ultimo suscriptor...");
+  Serial.println("----------------------------------------------");
+
+  return createHTTPRequest("/ArduinoAPI/user.php?getLastSubscriber");
+}
+
+/**
+   Funcion que retorna la cantidad de suscriptores
+*/
+String getSubscriberCount() {
+  Serial.println("");
+  Serial.println("------------------------------------------");
+  Serial.println("Recuperando la cantidad de suscriptores...");
+  Serial.println("------------------------------------------");
+
+  return createHTTPRequest("/ArduinoAPI/user.php?getSubscriberCount");
 }
